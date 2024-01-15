@@ -1,17 +1,18 @@
 package ex03.model;
 
-sealed class Response() {
+sealed class Response {
     protected abstract val code: String
-    protected var message: String = ""
+
+    protected abstract fun getMessage(): String
 
     fun success() {
         println("""
-            $message
-            *doing smth else than error*
-        """.trimIndent())
+            |${getMessage()}
+            |*doing smth else than error*
+        """.trimMargin())
     }
 
     fun error() {
-        println(message)
+        println(getMessage())
     }
 }

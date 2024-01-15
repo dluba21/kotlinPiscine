@@ -5,15 +5,15 @@ sealed class Error(header: String, title: String, description: String) : Respons
     abstract val title: String
     abstract val description: String
 
-    init {
-        message = """
+    override fun getMessage(): String {
+        return  """
             $header: 
               Code: $code
+              
               Title: $title
               Description: $description
         """.trimIndent()
     }
-
 }
 
 data class UserNotIdentifiedError(
