@@ -1,6 +1,7 @@
 package exercise1
 
 import exercise1.data.*
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -14,44 +15,19 @@ val pathFIle = "data-samples/listOfCompanies.json"
 
 fun main() {
 
+    var companies: List<Company>
+
     val file = File(pathFIle) //validate file
-
-
+    if (!file.exists() || !file.canRead()) throw IllegalArgumentException("Error: problem with file or path")
     val rawJson = file.readLines().fold("") { acc, next -> acc + next }
 
-    val rawJson1 = """
-        {
-  "listOfCompanies": [
-    {
-      "name": "OOO SuperPay",
-      "field_of_activity": "banking",
-      "vacancies": [
-        {
-          "profession": "qa",
-          "level": "middle",
-          "salary": 80000
-        },
-        {
-          "profession": "pm",
-          "level": "senior",
-          "salary": 130000
-        }
-      ],
-      "contacts": "79815354235"
+    try {
+        val trimmedRawJsonList = Json.parseToJsonElement(rawJson).jsonObject["listOfCompanies"]?.jsonArray.toString() //catch exception
+        companies = Json.decodeFromString<List<Company>>(trimmedRawJsonList)
     }
-    ]
+    catch (e: SerializationException) {
+        throw RuntimeException("Error: invalid json format\n" + e.message)
     }
-    """.trimIndent()
-
-
-    val trimmedRawJsonList = Json.parseToJsonElement(rawJson).jsonObject["listOfCompanies"]?.jsonArray.toString() //catch exception
-    val companies = Json.decodeFromString<List<Company>>(trimmedRawJsonList) //catch exception
-
-//    val available
-
-
-    //копим фильтры - список енамов
-    //потом за раз фильтруем все компании в новый список suitableVacancies
 
     var activityFieldFilter: List<ActivityField>
     var professionFilter: List<Profession>
@@ -81,6 +57,7 @@ fun main() {
     ) {
         println("$wrongInput ${CandidateLevel.optionToDisplay}")
     }
+    println(candidateLevelFilter)
 
     println("${CustomFilterEnum.printFilter(activityFieldFilter)}. " +
             "${CustomFilterEnum.printFilter(professionFilter)}. " +
@@ -93,14 +70,14 @@ fun main() {
     }
 
 
-    val suitableVacancies = companies.map {
-            it.vacancies.filter {
-                it.level in candidateLevelFilter && it.profession in professionFilter
-                        && SalaryFork.values().find { it. }
-
-
-            }
-    }.map { }
+    val suitableVacancies = companies.flatMap { company ->
+        company.vacancies.filter { vacancy ->
+                    vacancy.level in candidateLevelFilter
+                    && vacancy.profession in professionFilter
+                    && company.fieldOfActivity in activityFieldFilter
+                    && salaryFilter.firstOrNull { vacancy.salary in it.lowerBound..it.higherBound } != null
+        }.map { vacancy -> Triple(company.name, company.fieldOfActivity.displayableName, vacancy) }
+    }
 
 
     println("${CustomFilterEnum.printFilter(activityFieldFilter)}. " +
@@ -108,6 +85,19 @@ fun main() {
             "${CustomFilterEnum.printFilter(candidateLevelFilter)}. " +
             "${CustomFilterEnum.printFilter(salaryFilter)}.\n" +
             "The list of suitable vacancies:")
+    printVacancies(suitableVacancies)
 
 
+}
+
+fun printVacancies(suitableVacancies: List<Triple<String, String, Vacancy>>) {
+    suitableVacancies.forEachIndexed {counter, item ->
+        println("""
+            ${counter + 1}.
+            ${item.third.level} ${item.third.profession}     ---      ${item.third.salary}
+              ${item.first}
+              ${item.second}
+            ---------------------------------------
+        """.trimIndent())
+    }
 }

@@ -19,13 +19,10 @@ object CustomEnumSerializer : KSerializer<CustomSerializableEnum> {
 
     override fun deserialize(decoder: Decoder): CustomSerializableEnum {
         val enumString = decoder.decodeString()
-
-
-
-            return sequenceOf(CustomSerializableEnum.fromLowerCase<ActivityField>(enumString),
-                CustomSerializableEnum.fromLowerCase<Profession>(enumString),
-                CustomSerializableEnum.fromLowerCase<CandidateLevel>(enumString)).firstOrNull{it != null}
-                ?: throw IllegalArgumentException("Error: custom json serializer can't define enum of value = {$enumString}")
+        return sequenceOf(CustomSerializableEnum.fromLowerCase<ActivityField>(enumString),
+            CustomSerializableEnum.fromLowerCase<Profession>(enumString),
+            CustomSerializableEnum.fromLowerCase<CandidateLevel>(enumString)).firstOrNull{it != null}
+            ?: throw IllegalArgumentException("Error: custom json serializer can't define enum of value = {$enumString}")
     }
 }
 
@@ -43,8 +40,7 @@ interface CustomSerializableEnum {
      */
 
     companion object {
-        inline fun <reified T> fromLowerCase(value: String): T?
-        where T : Enum<T>, T : CustomSerializableEnum {
+        inline fun <reified T> fromLowerCase(value: String): T? where T : Enum<T>, T : CustomSerializableEnum {
             return enumValues<T>().firstOrNull {
                 it.jsonName.equals(value, ignoreCase = true)
             }
