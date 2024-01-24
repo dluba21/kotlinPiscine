@@ -1,4 +1,4 @@
-package ex01.utils //todo как без пакета заимпортить? ну и описания нелогичные вообще
+package ex01.utils
 
 val phones = arrayOf(
     "89583278394",

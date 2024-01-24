@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter
 
 const val DATE_FORMAT_ERROR = "Error: string doesn't match pattern"
 
-//todo как закинуть в obectclass
 enum class CustomDateFormat(val regex: Regex, val timeFormatter: DateTimeFormatter) {
     YEAR(Regex("\\d{4}"), DateTimeFormatter.ofPattern("yyyy")),
     MONTH_YEAR(Regex("(0[1-9]|10|11|12).\\d{4}"), DateTimeFormatter.ofPattern("MM.yyyy")),

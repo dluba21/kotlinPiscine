@@ -15,7 +15,7 @@ const val filePathCompanies = "data-samples/listOfCompanies.json"
 fun main() {
     val mapper: ObjectMapper = jacksonObjectMapper()
 
-    val fileCompanies = File(filePathCompanies) //validate file
+    val fileCompanies = File(filePathCompanies)
     if (!fileCompanies.exists() || !fileCompanies.canRead()) throw IllegalArgumentException("Error: problem with file or path")
     val companiesLines = fileCompanies.readLines().fold("") { acc, next -> acc + next }
     val companiesJsonTree = mapper.readTree(companiesLines)

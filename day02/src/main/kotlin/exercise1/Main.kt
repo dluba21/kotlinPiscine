@@ -7,9 +7,6 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import java.io.File
 
-//todo возвращать null еслиь значение плохое, пустой список если All и список из одного элемента если все гладко
-//todo сделать параметризованный метод внутри интерфейса который печатает енам и!! который вне статического блока (применим к объекту) - не надо но просто для тренировки
-
 val wrongInput = "It doesn't look like a correct input."
 val pathFIle = "data-samples/listOfCompanies.json"
 
@@ -17,12 +14,12 @@ fun main() {
 
     var companies: List<Company>
 
-    val file = File(pathFIle) //validate file
+    val file = File(pathFIle)
     if (!file.exists() || !file.canRead()) throw IllegalArgumentException("Error: problem with file or path")
     val rawJson = file.readLines().fold("") { acc, next -> acc + next }
 
     try {
-        val trimmedRawJsonList = Json.parseToJsonElement(rawJson).jsonObject["listOfCompanies"]?.jsonArray.toString() //catch exception
+        val trimmedRawJsonList = Json.parseToJsonElement(rawJson).jsonObject["listOfCompanies"]?.jsonArray.toString()
         companies = Json.decodeFromString(trimmedRawJsonList)
     }
     catch (e: SerializationException) {
@@ -36,7 +33,7 @@ fun main() {
 
     println("${ActivityField.optionToDisplay}")
     while (CustomFilterEnum.fromOrder<ActivityField>(readln().toIntOrNull())
-            .let { activityFieldFilter = it; it.isEmpty() } //todo мб null вернуть потом а не пустой список и пустой список если All
+            .let { activityFieldFilter = it; it.isEmpty() }
     ) {
         println("$wrongInput ${ActivityField.optionToDisplay}")
     }

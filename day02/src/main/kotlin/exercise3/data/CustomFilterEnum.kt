@@ -1,6 +1,5 @@
 package exercise3.data
 
-//todo по-хорошему вынести сюда метод customFilter() для конкретного енама, чтобы добиться большей инкапсуляции
 interface CustomFilterEnum {
     val order: Int
     val displayableName: String
@@ -19,7 +18,6 @@ interface CustomFilterEnum {
             else listOf(enumValues<T>().first{ it.order == order })
         }
 
-        //todo попроьовать вынести потом метод чтобы понять как параметризовывать вне компаньона (применять к объекту а не статически)
         inline fun <reified T> printFilter(filterList: List<T>): String where T : Enum<T>, T : CustomFilterEnum {
            return if (filterList.size == enumValues<T>().size) "All"
             else filterList.first().displayableName
