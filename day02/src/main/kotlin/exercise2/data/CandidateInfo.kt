@@ -10,8 +10,19 @@ data class CandidateInfo(
     @SerialName("name") val fullName: String,
     val profession: Profession,
     val sex: Sex,
-    @SerialName("birth_date") val dateOfBirth: LocalDate,
+    @SerialName("birth_date")
+    @Serializable(with = CustomLocalDateSerializer::class)
+    val dateOfBirth: LocalDate,
     @SerialName("contacts") val contact: Contact,
     val relocation: Relocation,
-    @SerialName("free_form") val freeForm: String
-)
+) {
+    override fun toString(): String {
+        return "CandidateInfo(" +
+                "fullName=$fullName, " +
+                "profession=$profession, " +
+                "sex=$sex, " +
+                "dateOfBirth=${dateOfBirth.toCustomFormat(CustomDateFormat.BIRTHDAY)}, " +
+                "contact=$contact, " +
+                "relocation=$relocation)"
+    }
+}

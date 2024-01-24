@@ -9,4 +9,5 @@ data class Resume(
     @SerialName("education") val educationList: List<Education>,
     @SerialName("job_experience") val jobExperienceList: List<JobExperience>,
     @SerialName("free_form") val freeForm: String
+
 )

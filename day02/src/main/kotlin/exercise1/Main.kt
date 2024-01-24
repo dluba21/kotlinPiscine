@@ -23,7 +23,7 @@ fun main() {
 
     try {
         val trimmedRawJsonList = Json.parseToJsonElement(rawJson).jsonObject["listOfCompanies"]?.jsonArray.toString() //catch exception
-        companies = Json.decodeFromString<List<Company>>(trimmedRawJsonList)
+        companies = Json.decodeFromString(trimmedRawJsonList)
     }
     catch (e: SerializationException) {
         throw RuntimeException("Error: invalid json format\n" + e.message)

@@ -15,4 +15,12 @@ data class Education(
     @Serializable(with = CustomLocalDateSerializer::class)
     val yearEnd: LocalDate,
     val description: String
-)
+) {
+    override fun toString(): String {
+        return "Education(" +
+                "educationType=$educationType, " +
+                "yearStart=${yearStart.toCustomFormat(CustomDateFormat.YEAR)}, " +
+                "yearEnd=${yearEnd.toCustomFormat(CustomDateFormat.YEAR)}, " +
+                "description=$description)"
+    }
+}
