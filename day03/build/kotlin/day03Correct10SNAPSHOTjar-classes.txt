@@ -1,1 +1,0 @@
-/Users/anrdeysuvorov/projects/kotlin_bootcamp/day03Correct/build/classes/kotlin/main/excercise01/MainKt.class:/Users/anrdeysuvorov/projects/kotlin_bootcamp/day03Correct/build/classes/kotlin/main/excercise01/Movie.class:/Users/anrdeysuvorov/projects/kotlin_bootcamp/day03Correct/build/classes/kotlin/main/excercise01/RevolverDrum.class

@@ -1,119 +1,98 @@
-package excercise01
+package src.excercise01
 
 import kotlin.reflect.full.starProjectedType
 
-
-//todo где тут wildcard
-//todo где тут вытягивать тип T
-//TODO Structure в toString() хз как вычислить - стирание типов
-//todo дописать hashcode
-
-
 class RevolverDrum<T>() {
-    var drum: ArrayList<T?> = arrayListOf(null, null, null, null, null, null)
-    val size: Int = 6
-    private var pointerIndex: Int = 0
-        set(pointerIndex) {
-            field = if (pointerIndex >= size) 0
-            else pointerIndex
-        }
-    var pointer: T? = null
-        get() {
-            return drum[pointerIndex]
-        }
 
-    constructor(src: RevolverDrum<T>) : this() {
-        for (i in 0 until size) {
-            this.drum[i] = src.drum[i]
+    val drum: CircularList<T> = CircularList(DRUM_SIZE)
+    var pointerIndex = drum.head
+        get() = drum.head
+
+    constructor(o: RevolverDrum<T>) : this() {
+        var current = o.drum.head
+        for (i in 0 until DRUM_SIZE) {
+            this.add(current?.value)
+            current = current?.next
         }
     }
 
-
-    fun getNotEmptyCellsSize(): Int {
-        return drum.filterNotNull().count()
+    fun size(): Int {
+        var current = drum.head
+        var counter = 0
+        for (i in 0 until DRUM_SIZE) {
+            current?.value?.let { counter++ }
+            current = current?.next
+        }
+        return counter
     }
 
-    fun add(elem: T): Boolean {
-        for (i in 0 until size) {
-            val currentCell = pointerIndex++
-            if (drum[currentCell] == null) {
-                drum[currentCell] = elem
+    fun add(newElem: T?): Boolean {
+        var current = drum.head
+        for (i in 0 until DRUM_SIZE) {
+            if (current?.value == null) {
+                current?.value = newElem
                 return true
             }
+            current = current?.next
         }
         return false
     }
 
     fun addAll(elems: MutableCollection<T?>): Boolean {
-        val filledCells = getNotEmptyCellsSize()
-        if (filledCells == 0 && elems.isNullOrEmpty()) return false
-
-        for (i in 0 until size) {
-            if (drum[i] == null && elems.isNotEmpty()) {
-                drum[i] = elems.first()
-                elems.remove(elems.first())
-            }
+        while (elems.isNotEmpty() && size() != DRUM_SIZE) {
+            elems.elementAt(0)?.let { add(elems.elementAt(0)) }
+            elems.remove(elems.elementAt(0))
         }
-        return elems.isEmpty()
-    }
-
-    operator fun RevolverDrum<T>.get(index: Int): T? {
-        if (index >= size) throw IllegalArgumentException("Error: index [$index] is out of bounds")
-        return drum[index]
+        return elems.isNotEmpty()
     }
 
     fun shoot(): Boolean {
-        val currentpointerIndex = pointerIndex++
-
-        return if (drum[currentpointerIndex] != null) {
-            drum[currentpointerIndex] = null; true
-        } else false
+        val result = pointerIndex?.value == null
+        pointerIndex?.value = null
+        drum.changeHeadByOne()
+        return result
     }
 
     fun unload(): MutableCollection<T?> {
-        var extractedBullets: ArrayList<T?> = arrayListOf()
-
-        for (i in 0 until size) {
-            drum.getOrNull(pointerIndex)?.let { extractedBullets.add(it); drum[pointerIndex] = null }
-            pointerIndex++;
+        val result = mutableListOf<T?>()
+        var current = drum?.head
+        repeat(DRUM_SIZE) {
+            current?.value?.let {
+                result.add(current?.value)
+                current?.value = null
+            }
+            current = current?.next
         }
-
-        return extractedBullets
+        return result
     }
 
     fun scroll() {
-        pointerIndex = (0..size).shuffled().first()
+        var scrollTimes = (0..6).shuffled().first()
+        repeat(scrollTimes) {
+            drum.changeHeadByOne()
+        }
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-         if (other !is RevolverDrum<*>) return false
-
-        return pointerIndex == other.pointerIndex
-                && other.drum.toArray() contentEquals drum.toArray()
-    }
-
-//    override fun hashCode(): Int {
-//        return drum.toArray() contentEquals
-//    }
 
     override fun toString(): String {
-        val tmp = run {
-            val res = arrayListOf<T?>()
-            var i = -1
-            while (++i < size) {
-                res.add(drum[pointerIndex++])
+        val arrayToPrint = run {
+            var array = arrayListOf<T?>()
+            var current = drum.head
+            for (i in 0 until DRUM_SIZE) {
+                array.add(current?.value)
+                current = current?.next
             }
-            res
+            array
         }
+
         return """
-           Structure: ${RevolverDrum::class.starProjectedType}
-           Objects: $tmp
-           pointer: $pointer
-       """.trimIndent()
+            Structure: ${RevolverDrum::class.starProjectedType}
+            Objects: $arrayToPrint
+            pointerIndex: ${pointerIndex?.value}
+        """.trimIndent()
     }
 
-    operator fun get(index: Int) = drum[index]
+
+    companion object {
+        const val DRUM_SIZE = 6
+    }
 }
-
-
